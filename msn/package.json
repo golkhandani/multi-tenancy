@@ -1,0 +1,105 @@
+{
+  "name": "mysql2-nestjs",
+  "version": "0.1.1",
+  "description": "NestJS package for mysql2",
+  "author": "golkhandani",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/golkhandani/mysql2-nestjs"
+  },
+  "main": "dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "*.md"
+  ],
+  "keywords": [
+    "nestjs",
+    "raw query",
+    "mysql",
+    "mysql2",
+    "nest",
+    "typescript"
+  ],
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "format": "prettier --write \"lib/**/*.ts\" ",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{lib,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^7.4.4",
+    "@nestjs/core": "^7.4.4",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.6.3"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^7.5.1",
+    "@nestjs/common": "^7.4.4",
+    "@nestjs/core": "^7.4.4",
+    "@nestjs/schematics": "^7.1.2",
+    "@nestjs/testing": "^7.4.4",
+    "@types/jest": "26.0.14",
+    "@types/node": "^14.11.8",
+    "@types/supertest": "^2.0.10",
+    "@typescript-eslint/eslint-plugin": "4.4.1",
+    "@typescript-eslint/parser": "4.4.1",
+    "eslint": "7.11.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-import": "^2.22.1",
+    "husky": "^4.3.0",
+    "jest": "26.5.3",
+    "lint-staged": "^10.4.0",
+    "prettier": "^2.1.2",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "rxjs": "^6.6.3",
+    "supertest": "^5.0.0",
+    "ts-jest": "26.4.1",
+    "ts-loader": "^8.0.4",
+    "ts-node": "^9.0.0",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.0.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "lib",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "mysql2": "^2.2.5"
+  }
+}
