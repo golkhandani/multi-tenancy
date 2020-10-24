@@ -36,7 +36,6 @@ export interface MysqlExecuter {
 const tLogger = new Logger('TenancyService');
 tLogger.setContext('Tenancy');
 const tenancyFactory: Provider = {
-    scope: Scope.REQUEST,
     provide: NEST_MYSQL2_TENANCY,
     useFactory: async (mysql: Mysql, options: MysqlTenancyOption, req: Request): Promise<any> => {
         // x-db-t
@@ -57,9 +56,9 @@ const tenancyFactory: Provider = {
                 }
             }
         }
-        return executer(mysql).db(req.headers['x-db-t'] as string);
+        return executer(mysql);
     },
-    inject: [NEST_MYSQL2_CONNECTION, NEST_MYSQL2_TENANCY_OPTION, REQUEST],
+    inject: [NEST_MYSQL2_CONNECTION, NEST_MYSQL2_TENANCY_OPTION],
 };
 
 @Global()
@@ -103,7 +102,10 @@ export class TenancyMiddleware implements NestMiddleware {
     async use(req: Request, res: Response, next: Function) {
         // console.log("Middleware...");
 
-        // req[QUERY_RUNNER] = this.mysql.db("Fabizi") as MysqlRunner;
+        req[QUERY_RUNNER] = this.mysql
+            .db(
+                req.headers["x-db-t"] as string
+            ) as MysqlRunner;
         next();
     }
 }

@@ -17,15 +17,13 @@ class AResult {
 @Controller()
 export class AppController {
   constructor(
-    @InjectMysqlExecuter()
-    private readonly mysql: MysqlRunner,
   ) { }
 
   @Get()
   async getHello(
     @QueryRunner() queryRunner: MysqlRunner
   ): Promise<any> {
-    const [resultA, resultB] = await this.mysql
+    const [resultA, resultB] = await queryRunner
       .run<[AResult[], AResult[]]>("SELECT 1+1 as A; SELECT 1+1 as B;")
     const t = resultA.map(item => item.A + 2)
     return { result: t, resultB };

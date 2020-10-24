@@ -25,8 +25,8 @@ import { MultiTenancyModule, TenancyMiddleware } from './tenancy.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // consumer
-    //   .apply(TenancyMiddleware)
-    //   .forRoutes(AppController)
+    consumer
+      .apply(TenancyMiddleware)
+      .forRoutes(AppController)
   }
 }
