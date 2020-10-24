@@ -1,6 +1,12 @@
-import { createParamDecorator, DynamicModule, ExecutionContext, Global, Inject, Injectable, Logger, Module, NestMiddleware } from "@nestjs/common";
+import {
+    createParamDecorator, DynamicModule,
+    ExecutionContext, Global,
+    Inject, Injectable, Logger, Module,
+    NestMiddleware, Provider, Scope
+} from "@nestjs/common";
+import { REQUEST } from "@nestjs/core";
 import { Mysql } from "mysql2-nestjs";
-
+import { Request, Response } from "express";
 const NEST_MYSQL2_TENANCY = 'NEST_MYSQL2_TENANCY';
 const NEST_MYSQL2_TENANCY_OPTION = 'NEST_MYSQL2_TENANCY_OPTION';
 
@@ -27,30 +33,33 @@ export interface MysqlExecuter {
      */
     db(dbName: string): MysqlRunner;
 }
-const tenancyFactory = {
+const tLogger = new Logger('TenancyService');
+tLogger.setContext('Tenancy');
+const tenancyFactory: Provider = {
+    scope: Scope.REQUEST,
     provide: NEST_MYSQL2_TENANCY,
-    useFactory: async (mysql: Mysql, options: MysqlTenancyOption): Promise<any> => {
-        const logger = new Logger('TenancyService');
-        logger.setContext('Tenancy');
+    useFactory: async (mysql: Mysql, options: MysqlTenancyOption, req: Request): Promise<any> => {
+        // x-db-t
         const executer = function (mysqlPool: Mysql): MysqlExecuter {
             return {
                 db: function (dbName: string): MysqlRunner {
                     return {
                         run: async function (sqlString: string) {
-                            const q = `\nUSE ${dbName};\n` + sqlString;
+                            const q = `\nUSE ${dbName};\n` +
+                                sqlString.replace("; ", ";\n");
                             if (options.debug) {
-                                logger.verbose(q);
+                                tLogger.verbose(q);
                             }
-                            const [[_, queryResult], __] = await mysqlPool.query(q)
-                            return queryResult;
+                            const [[_, ...queryResult], __] = await mysqlPool.query(q)
+                            return queryResult as any;
                         }
                     }
                 }
             }
         }
-        return executer(mysql);
+        return executer(mysql).db(req.headers['x-db-t'] as string);
     },
-    inject: [NEST_MYSQL2_CONNECTION, NEST_MYSQL2_TENANCY_OPTION],
+    inject: [NEST_MYSQL2_CONNECTION, NEST_MYSQL2_TENANCY_OPTION, REQUEST],
 };
 
 @Global()
@@ -92,7 +101,9 @@ export class TenancyMiddleware implements NestMiddleware {
         private readonly mysql: MysqlExecuter,
     ) { }
     async use(req: Request, res: Response, next: Function) {
-        req[QUERY_RUNNER] = this.mysql.db("Fabizi") as MysqlRunner;
+        // console.log("Middleware...");
+
+        // req[QUERY_RUNNER] = this.mysql.db("Fabizi") as MysqlRunner;
         next();
     }
 }
