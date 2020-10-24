@@ -21,6 +21,7 @@ export function helloMsn() {
 
 const NEST_MYSQL2_OPTIONS = 'NEST_MYSQL2_OPTIONS';
 const NEST_MYSQL2_CONNECTION = 'NEST_MYSQL2_CONNECTION';
+const NEST_MYSQL2_SPECIFIC = 'NEST_MYSQL2_SPECIFIC';
 
 export interface NestMysql2Options extends PoolOptions { }
 
@@ -75,18 +76,20 @@ class NestMysql2Service {
       }
     }
   }
-
-
 }
+
+
 
 const connectionFactory = {
   provide: NEST_MYSQL2_CONNECTION,
   useFactory: async (NestMysql2Service: NestMysql2Service): Promise<any> => {
     const p = await NestMysql2Service.getPool();
-    return NestMysql2Service.executer(p);
+    return p;
   },
   inject: [NestMysql2Service],
 };
+
+
 
 function createNestMysql2Providers(options: NestMysql2Options) {
   return [

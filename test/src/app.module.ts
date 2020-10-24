@@ -1,8 +1,11 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { NestMysql2Module } from 'mysql2-nestjs';
+import { DynamicModule, Global, MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
+import { Mysql, NestMysql2Module } from 'mysql2-nestjs';
+import { inflate } from 'zlib';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MultiTenancyMiddleware } from './db.attacher';
+import { MultiTenancyModule, TenancyMiddleware } from './tenancy.module';
+
+
 
 @Module({
   imports: [
@@ -12,15 +15,18 @@ import { MultiTenancyMiddleware } from './db.attacher';
       user: "root",
       password: "example",
       multipleStatements: true
-    })
+    }),
+    MultiTenancyModule.register({ debug: false })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(MultiTenancyMiddleware)
+      .apply(TenancyMiddleware)
       .forRoutes(AppController)
   }
 }

@@ -8,22 +8,24 @@ import {
   Mysql
 } from "mysql2-nestjs";
 import { MyBody } from './NestedEntity';
-import { DbQuery } from './db.attacher';
+import { MysqlRunner, QueryRunner } from './tenancy.module';
+
+class AResult {
+  A: number;
+}
 
 @Controller()
 export class AppController {
   constructor(
-    @InjectMysql()
-    private readonly mysql: any,
-    private readonly appService: AppService
   ) { }
 
   @Get()
   async getHello(
-    @DbQuery() dbQuery
+    @QueryRunner() queryRunner: MysqlRunner
   ): Promise<any> {
-    const result = await dbQuery.run("SELECT 1+1;")
-    return { result };
+    const result = await queryRunner.run<AResult[]>("SELECT 1+1 as A;")
+    const t = result.map(item => item.A + 2)
+    return { result: t };
   }
 
   @Post()
