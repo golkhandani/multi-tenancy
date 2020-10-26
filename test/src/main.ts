@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalFilters(new FastestValidatorExceptionFilter({
     showStack: false
   }));
-  console.log(app.select(AppModule));
+  // console.log(app.select(AppModule));
 
   await app.listen(3000);
 }

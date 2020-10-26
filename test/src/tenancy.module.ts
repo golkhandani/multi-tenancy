@@ -39,6 +39,8 @@ const tenancyFactory: Provider = {
     provide: NEST_MYSQL2_TENANCY,
     useFactory: async (mysql: Mysql, options: MysqlTenancyOption, req: Request): Promise<any> => {
         // x-db-t
+        console.log("TENANCY FACTORY");
+
         const executer = function (mysqlPool: Mysql): MysqlExecuter {
             return {
                 db: function (dbName: string): MysqlRunner {
